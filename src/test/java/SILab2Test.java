@@ -37,16 +37,16 @@ class SILab2Test {
     }
 
     @Test
-    public void Tests(){
-		RuntimeException exception;
-		//Test1: slucaj koga user objektot e null
-        exception=assertThrows(RuntimeException.class, () -> obj.function(Test1, allUsers));
+    public void EveryBranch() {
+        RuntimeException exception;
+        //Test1: slucaj koga user objektot e null
+        exception = assertThrows(RuntimeException.class, () -> obj.function(Test1, allUsers));
         assertTrue(exception.getMessage().contains("The user argument is not initialized!"));
-		//Test2: koga objektot e inicijaliziran, so nickname postaven na null
-        exception=assertThrows(RuntimeException.class, () -> obj.function(Test2, allUsers));
+        //Test2: koga objektot e inicijaliziran, so nickname postaven na null
+        exception = assertThrows(RuntimeException.class, () -> obj.function(Test2, allUsers));
         assertTrue(exception.getMessage().contains("User already exists!"));
-		//Test3: koga nickname e postaven na vekepostoecki od listata
-        exception=assertThrows(RuntimeException.class, () -> obj.function(Test3, allUsers));
+        //Test3: koga nickname e postaven na vekepostoecki od listata
+        exception = assertThrows(RuntimeException.class, () -> obj.function(Test3, allUsers));
         assertTrue(exception.getMessage().contains("User already exists!"));
         assertAll(
                 //Test4: se vnesuva nickname sto go zadovoluva prethodniot uslov, no email i passwordot ostanuvaat null, pagja na testot za email
@@ -56,6 +56,49 @@ class SILab2Test {
                 //Test6: se vnesuvaat site podatoci, na emailot mu fali .
                 () -> assertFalse(obj.function(Test6, allUsers)),
                 //Test7: se vnesuvaat site podatoci sto gi zadovoluvaat site uslovi i vrakja true
+                () -> assertTrue(obj.function(Test7, allUsers))
+        );
+    }
+
+    @Test
+    public void MultipleCondition() {
+        RuntimeException exception;
+        //if (user==null)
+        exception=assertThrows(RuntimeException.class, () -> obj.function(Test1, allUsers));
+        assertTrue(exception.getMessage().contains("The user argument is not initialized!"));
+        exception=assertThrows(RuntimeException.class, () -> obj.function(Test2, allUsers));
+        assertTrue(exception.getMessage().contains("User already exists!"));
+
+        //if (user.getUsername()==null || allUsers.contains(user.getUsername()))
+        exception=assertThrows(RuntimeException.class, () -> obj.function(Test2, allUsers));
+        assertTrue(exception.getMessage().contains("User already exists!"));
+        exception=assertThrows(RuntimeException.class, () -> obj.function(Test3, allUsers));
+        assertTrue(exception.getMessage().contains("User already exists!"));
+        assertFalse(obj.function(Test4, allUsers));
+
+        //if (user.getEmail()==null)
+        assertAll(
+                () -> assertFalse(obj.function(Test4, allUsers)),
+                () -> assertFalse(obj.function(Test5, allUsers))
+        );
+
+        //if (user.getEmail().charAt(i)=='@')
+        assertAll(
+                () -> assertFalse(obj.function(Test6, allUsers)),
+                () -> assertFalse(obj.function(Test5, allUsers))
+        );
+
+        //if (atChar && user.getEmail().charAt(i)=='.')
+        assertAll(
+                () -> assertTrue(obj.function(Test7, allUsers)),
+                () -> assertFalse(obj.function(Test6, allUsers)),
+                () -> assertFalse(obj.function(Test5, allUsers))
+        );
+
+        //if (!atChar || !dotChar)
+        assertAll(
+                () -> assertFalse(obj.function(Test5, allUsers)),
+                () -> assertFalse(obj.function(Test6, allUsers)),
                 () -> assertTrue(obj.function(Test7, allUsers))
         );
     }
